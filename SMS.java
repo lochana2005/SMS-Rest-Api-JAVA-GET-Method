@@ -10,8 +10,8 @@ import java.util.logging.Level;
 
 public class SMS {
 
-    private static final String TOKEN = "Your-Token-key";
-    private static final String FROM = "Send-Id";
+    private static final String TOKEN = "YOUR-TOKEN-ID";
+    private static final String FROM = "SENDER-ID";
     private static final String API_URL = "https://send.lk/sms/send.php";
 
     public String sendSMS(String mobile, String message, String patientRegNo, String currentDateTime, String sendCatId) {
@@ -19,10 +19,10 @@ public class SMS {
         BufferedReader in = null;
 
         try {
-            // Encode message for URL
+       
             String encodedMessage = URLEncoder.encode(message, "UTF-8");
 
-            // Construct the URL
+     
             String apiUrl = API_URL + "?token=" + TOKEN
                     + "&to=" + URLEncoder.encode(mobile.trim(), "UTF-8")
                     + "&from=" + URLEncoder.encode(FROM, "UTF-8")
@@ -50,13 +50,13 @@ public class SMS {
             System.out.println("Response: " + response);
 
             // Determine status and log to the database
-            String statusId = (responseCode == HttpURLConnection.HTTP_OK) ? "1" : "0";
+            String statusId = (responseCode == HttpURLConnection.HTTP_OK) ? "1" : "2";
             logMessageStatus(statusId, patientRegNo, mobile, message, currentDateTime, sendCatId);
 
             return (responseCode == HttpURLConnection.HTTP_OK) ? "Message sent successfully" : "Failed to send message";
         } catch (Exception e) {
             e.printStackTrace();
-            logMessageStatus("0", patientRegNo, mobile, message, currentDateTime, sendCatId);
+            logMessageStatus("2", patientRegNo, mobile, message, currentDateTime, sendCatId);
             return "Error while sending SMS: " + e.getMessage();
         } finally {
             try {
@@ -86,4 +86,13 @@ public class SMS {
         }
     }
 
-   
+    public String sendAddBooking(String mobile, String name, String bookingNu, String bookingDate, String bookingId, String patientRegNo) {
+        String message = String.format(
+                "Hello %s,\nYour Booking Id Is %s\n%s.\n%s.\nThank you for choosing with us!️",
+                name, bookingId, bookingDate, bookingNu
+        );
+        return sendSMS(mobile, message, patientRegNo, LocalDate.now().toString(), "2");
+    }
+
+
+}
